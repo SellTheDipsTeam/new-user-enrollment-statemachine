@@ -33,7 +33,7 @@
         },
         "Create DynamoDB User": {
             "Type": "Task",
-            "Resource": "${AddMemberToDynamoFunctionArn}",
+            "Resource": "${AddMemberToDynamoDBArn}",
             "Retry": [
                 {
                     "ErrorEquals": [

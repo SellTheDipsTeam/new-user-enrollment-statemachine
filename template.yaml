@@ -20,14 +20,13 @@ Parameters:
     Default : members
 
 Resources:
-  NewMemberConfirmationStateMachine:
+  NewUserEnrollmentStateMachine:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
     Properties:
-      DefinitionUri: statemachine/confirm-user.asl.json
+      DefinitionUri: statemachine/new-user-enrollment.asl.json
       DefinitionSubstitutions:
-
         ConfirmNewEmailArn: !GetAtt ConfirmNewEmail.Arn
-        AddMemberToDynamoFunctionArn: !GetAtt AddMemberToDynamoFunction.Arn
+        AddMemberToDynamoDBArn: !GetAtt AddMemberToDynamoDB.Arn
         DDBPutItem: !Sub arn:${AWS::Partition}:states:::dynamodb:putItem
         DDBTable: !Ref TransactionTable
 
@@ -79,9 +78,9 @@ Outputs:
   # StockTradingStateMachineHourlyTradingSchedule is an implicit Schedule event rule created out of Events key under Serverless::StateMachine
   # Find out more about other implicit resources you can reference within SAM
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
-  StockTradingStateMachineArn:
-    Description: "Stock Trading state machine ARN"
-    Value: !Ref StockTradingStateMachine
-  StockTradingStateMachineRole:
-    Description: "IAM Role created for Stock Trading state machine based on the specified SAM Policy Templates"
-    Value: !GetAtt StockTradingStateMachineRole.Arn
+  NewUserEnrollmentStateMachineArn:
+    Description: "New User Enrollment state machine ARN"
+    Value: !Ref NewUserEnrollmentStateMachine
+  NewUserEnrollmentStateMachineRole:
+    Description: "IAM Role created for New User Enrollment state machine based on the specified SAM Policy Templates"
+    Value: !GetAtt NewUserEnrollmentStateMachineRole.Arn
