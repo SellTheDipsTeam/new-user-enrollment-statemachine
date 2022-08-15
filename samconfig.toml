@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "user-comfirmation"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-c8j8y9y3sg9h"
+s3_prefix = "user-comfirmation"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "TestClientId=\"5et67k120so4il228vielrkch0\" Region=\"us-east-1\" MemberTableName=\"members\""
+image_repositories = []

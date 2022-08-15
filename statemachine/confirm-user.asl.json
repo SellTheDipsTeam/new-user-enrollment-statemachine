@@ -1,0 +1,67 @@
+{
+    "Comment": "A state machine that confirms member emails and adds confirmed member to dynamo",
+    "StartAt": "Confirm Email",
+    "States": {
+        "Confirm Email": {
+            "Type": "Task",
+            "Resource": "${ConfirmNewEmailArn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 1,
+                    "BackoffRate": 1.5
+                }
+            ],
+            "Next": "Email Confirmed?"
+        },
+        "Email Confirmed?": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Variable": "$.success",
+                    "BooleanEquals": true,
+                    "Next": "Create DynamoDB User"
+                }
+            ],
+            "Default": "Confirmation Failure"
+        },
+        "Confirmation Failure": {
+            "Type": "Fail"
+        },
+        "Create DynamoDB User": {
+            "Type": "Task",
+            "Resource": "${AddMemberToDynamoFunctionArn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 2,
+                    "MaxAttempts": 1,
+                    "BackoffRate": 1
+                }
+            ],
+            "Next": "Member Added?"
+        },
+        "Member Added?": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Variable": "$.statusCode",
+                    "NumericEquals": 200,
+                    "Next": "New Member Confirmed"
+                }
+            ],
+            "Default": "Member Dynamo Update Fail"
+        },
+        "Member Dynamo Update Fail": {
+            "Type": "Fail"
+        },
+        "New Member Confirmed": {
+            "Type": "Success"
+        }
+    }
+}
