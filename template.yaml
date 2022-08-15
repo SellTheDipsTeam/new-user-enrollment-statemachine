@@ -17,6 +17,7 @@ Parameters:
   MemberTableName:
     Type: String
     Description: The table used to store SellTheDips General user information
+    Default : members
 
 Resources:
   NewMemberConfirmationStateMachine:
@@ -33,8 +34,10 @@ Resources:
       Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - LambdaInvokePolicy:
             FunctionName: !Ref ConfirmNewEmail
-        - DynamoDBWritePolicy:
-            TableName: !Ref TransactionTable
+        - LambdaInvokePolicy:
+            FunctionName: !Ref AddMemberToDynamoDB
+#        - DynamoDBWritePolicy:
+#            TableName: !Ref TransactionTable
 
   ConfirmNewEmail:
     Type: AWS::Serverless::Function
@@ -54,7 +57,7 @@ Resources:
           AWS_USER_POOL_CLIENT_ID: !Ref TestClientId
           REGION: !Ref Region
 
-  AddMemberToDynamoFunction:
+  AddMemberToDynamoDB:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
       CodeUri: functions/add-member-to-dynamo/
