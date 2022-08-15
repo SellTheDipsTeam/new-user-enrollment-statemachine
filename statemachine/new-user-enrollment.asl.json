@@ -61,7 +61,7 @@
             "Type": "Fail"
         },
         "New Member Confirmed": {
-            "Type": "Success"
+            "Type": "Succeed"
         }
     }
 }
