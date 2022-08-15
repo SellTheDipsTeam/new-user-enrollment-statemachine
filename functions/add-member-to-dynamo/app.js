@@ -9,7 +9,7 @@ const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
  * @returns {Object} object - Object containing the current price of the stock
  * 
  */
-exports.lambdaHandler = async (event, context) => {
+exports.addMemberToDynamo = async (event, context) => {
     if (event.httpMethod) {
         if (event.httpMethod !== 'POST') {
             return {
