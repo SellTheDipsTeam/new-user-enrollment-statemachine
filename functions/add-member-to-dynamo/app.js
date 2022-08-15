@@ -1,4 +1,5 @@
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+const {constructUserJSON} = require("./utils/db-utils");
 /**
  * Sample Lambda function which mocks the operation of checking the current price of a stock.
  * For demonstration purposes this Lambda function simply returns a random integer between 0 and 100 as the stock price.
@@ -18,7 +19,7 @@ exports.addMemberToDynamo = async (event, context) => {
             };
         }
     }
-    const {email, uuid, account_creation_date, preferred_username} = JSON.parse(event.body);
+    const {email, uuid, account_creation_date, preferred_username} = event;
     const client = new DynamoDBClient({ region: process.env.REGION});
 
     const params = {

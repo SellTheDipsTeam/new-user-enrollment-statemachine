@@ -21,7 +21,7 @@ exports.confirmUserEmailFunction = async(event) => {
         }
     }
 
-    const {email, uuid, code, preferred_username} = JSON.parse(event.body);
+    const {email, uuid, code, preferred_username} = event.body;
     const params = {
         ClientId: process.env.AWS_USER_POOL_CLIENT_ID,
         Username: email,
@@ -39,11 +39,11 @@ exports.confirmUserEmailFunction = async(event) => {
 
         }
         return {
-            success: true,
-            uuid: uuid,
-            displayName: preferred_username,
-            email: email,
-            account_creation_date: new Date().getUTCDate()
+                success: true,
+                uuid: uuid,
+                displayName: preferred_username,
+                email: email,
+                account_creation_date: new Date().getUTCDate()
         };
     } catch (err) {
         if (err['$metadata']) {

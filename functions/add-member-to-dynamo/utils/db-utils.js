@@ -31,3 +31,7 @@ const constructUserJSON = (uuid, account_creation_date, email, preferred_usernam
         }
     };
 }
+
+module.exports = {
+    constructUserJSON
+}
