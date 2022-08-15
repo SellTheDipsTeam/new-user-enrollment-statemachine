@@ -48,7 +48,7 @@ Resources:
         - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get all items from a DynamoDB table.
+      Description: Confirms a new user's email.
       Policies:
       Environment:
         Variables:
@@ -66,12 +66,12 @@ Resources:
         - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get all items from a DynamoDB table.
+      Description: Adds a user to the dynamo db table that contains a list of all members.
       Policies:
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          DYNAMO_TABLE_NAME: !Ref TestClientId
+          DYNAMO_TABLE_NAME: !Ref MemberTableName
           REGION: !Ref Region
 
 Outputs:
