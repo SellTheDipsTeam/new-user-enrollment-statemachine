@@ -22,8 +22,8 @@ Parameters:
 Resources:
   NewUserEnrollmentApi:
     Type: AWS::Serverless::Api
-    Properties: New User Enrollment API
-    StageName: V1
+    Properties:
+      StageName: V1
 
   NewUserEnrollmentStateMachine:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
