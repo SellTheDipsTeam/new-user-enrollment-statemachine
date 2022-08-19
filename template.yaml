@@ -20,6 +20,11 @@ Parameters:
     Default : members
 
 Resources:
+  NewUserEnrollmentApi:
+    Type: AWS::Serverless::Api
+    Properties: New User Enrollment API
+    StageName: V1
+
   NewUserEnrollmentStateMachine:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
     Properties:
@@ -29,7 +34,13 @@ Resources:
         AddMemberToDynamoDBArn: !GetAtt AddMemberToDynamoDB.Arn
         DDBPutItem: !Sub arn:${AWS::Partition}:states:::dynamodb:putItem
 #        DDBTable: !Ref TransactionTable
-
+      Events:
+        NewUserEnrollmentApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NewUserEnrollmentApi
+            Path: /enroll-user
+            Method: POST
       Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - LambdaInvokePolicy:
             FunctionName: !Ref ConfirmNewEmail
