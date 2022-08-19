@@ -89,7 +89,6 @@ Outputs:
   # StockTradingStateMachineHourlyTradingSchedule is an implicit Schedule event rule created out of Events key under Serverless::StateMachine
   # Find out more about other implicit resources you can reference within SAM
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
-  Outputs:
   NewUserEnrollmentApi:
     Description: "API Gateway endpoint URL to call New User Enrollment State Machine"
     Value: !Sub "https://${NewUserEnrollmentApi}.execute-api.${AWS::Region}.amazonaws.com/v1/"
