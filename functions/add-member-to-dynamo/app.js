@@ -35,9 +35,6 @@ exports.addMemberToDynamo = async (event, context) => {
         };
 
     } catch(err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify(err)
-        }
+        throw err;
     }
 };

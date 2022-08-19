@@ -38,28 +38,27 @@ exports.confirmUserEmailFunction = async(event) => {
         if (response['$metadata'].httpStatusCode === 200) {
 
         }
+
+        let today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        const yyyy = today.getFullYear();
+        today = mm + '/' + dd + '/' + yyyy;
+
         return {
                 success: true,
                 uuid: uuid,
-                displayName: preferred_username,
+                preferred_username: preferred_username,
                 email: email,
-                account_creation_date: new Date().getUTCDate()
+                account_creation_date: today
         };
     } catch (err) {
         if (err['$metadata']) {
             const statusCode = err['$metadata'].httpStatusCode
             log("ERROR", event, err.name, null, statusCode);
-            return {
-                'statusCode': statusCode,
-                'body': err.name,
-                'success': false
-            };
+            throw err;
         }
         log("ERROR", event, err.message, null, 500);
-        return {
-            'statusCode': 500,
-            'body': 'Internal Server Error',
-            'success': false
-        };
+        throw err;
     }
 }
