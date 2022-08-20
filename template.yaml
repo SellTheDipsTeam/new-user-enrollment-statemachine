@@ -28,7 +28,6 @@ Resources:
           Name: 'AWS::Include'
           Parameters:
             Location: 'api.yml'
-      StageName: v1
 
   NewUserEnrollmentStateMachine:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
@@ -40,14 +39,14 @@ Resources:
         DDBPutItem: !Sub arn:${AWS::Partition}:states:::dynamodb:putItem
 #        DDBTable: !Ref TransactionTable
       Type: EXPRESS
-      Events:
-        NewUserEnrollmentApi:
-          Type: HttpApi
-          Properties:
-            RestApiId: !Ref NewUserEnrollmentApi
-            Path: /enroll-user
-            Method: POST
-            IntegrationSubtype: "StepFunctions-StartSyncExecution"
+#      Events:
+#        NewUserEnrollmentApi:
+#          Type: HttpApi
+#          Properties:
+#            RestApiId: !Ref NewUserEnrollmentApi
+#            Path: /enroll-user
+#            Method: POST
+#            IntegrationSubtype: "StepFunctions-StartSyncExecution"
       Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - LambdaInvokePolicy:
             FunctionName: !Ref ConfirmNewEmail

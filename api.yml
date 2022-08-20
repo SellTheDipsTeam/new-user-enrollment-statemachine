@@ -3,7 +3,7 @@ info:
   title: "New User Enrollment API Paramenters"
   version: "2020-11-06 15:32:29UTC"
 paths:
-  /:
+  /enroll-user:
     post:
       responses:
         default:
