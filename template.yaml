@@ -21,8 +21,13 @@ Parameters:
 
 Resources:
   NewUserEnrollmentApi:
-    Type: AWS::Serverless::Api
+    Type: AWS::Serverless::HttpApi
     Properties:
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: 'api.yml'
       StageName: v1
 
   NewUserEnrollmentStateMachine:
@@ -42,6 +47,7 @@ Resources:
             RestApiId: !Ref NewUserEnrollmentApi
             Path: /enroll-user
             Method: POST
+            IntegrationSubtype: "StepFunctions-StartSyncExecution"
       Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - LambdaInvokePolicy:
             FunctionName: !Ref ConfirmNewEmail
@@ -85,6 +91,28 @@ Resources:
           # Make table name accessible as environment variable from function code during execution
           DYNAMO_TABLE_NAME: !Ref MemberTableName
           REGION: !Ref Region
+
+  HttpApiRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: AllowSFNExec
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: "states:StartSyncExecution"
+                Resource: !GetAtt NewUserEnrollmentStateMachine.Arn
+
 
 Outputs:
   # StockTradingStateMachineHourlyTradingSchedule is an implicit Schedule event rule created out of Events key under Serverless::StateMachine
