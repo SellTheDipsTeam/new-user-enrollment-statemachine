@@ -6,30 +6,8 @@ paths:
   /enroll-user:
     post:
       responses:
-        '201':
-          description: User email has been confirmed and database has been updated accordingly
-          content:
-            application/json: {}
-        '400':
-          description: Bad Request
-          content:
-            application/json: {}
-        '404':
-          description: User Not Found
-          content:
-            application/json: {}
-        '405':
-          description: Invalid httpMethod
-          content:
-            application/json: {}
-        '500':
-          description: Invalid httpMethod
-          content:
-            application/json: { }
         default:
-          description: "Error",
-          content:
-            'application/json': {}
+          description: "Default Response For Post",
       x-amazon-apigateway-integration:
         integrationSubtype: "StepFunctions-StartSyncExecution"
         credentials:
@@ -44,7 +22,7 @@ paths:
         httpMethod: "POST"
 x-amazon-apigateway-cors:
   allowMethods:
-    - "*"
+    - "POST"
   maxAge: 0
   allowCredentials: false
   allowOrigins:

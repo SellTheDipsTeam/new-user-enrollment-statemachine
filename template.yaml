@@ -23,6 +23,7 @@ Resources:
   NewUserEnrollmentApi:
     Type: AWS::Serverless::HttpApi
     Properties:
+      FailOnWarnings: True
       DefinitionBody:
         'Fn::Transform':
           Name: 'AWS::Include'
@@ -130,7 +131,7 @@ Outputs:
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
   NewUserEnrollmentApi:
     Description: "API Gateway endpoint URL to call New User Enrollment State Machine"
-    Value: !Sub "https://${NewUserEnrollmentApi}.execute-api.${AWS::Region}.amazonaws.com/v1/"
+    Value: !Sub "https://${NewUserEnrollmentApi}.execute-api.${AWS::Region}.amazonaws.com/enroll-user"
   NewUserEnrollmentStateMachineArn:
     Description: "New User Enrollment state machine ARN"
     Value: !Ref NewUserEnrollmentStateMachine
