@@ -19,7 +19,6 @@ paths:
         payloadFormatVersion: "1.0"
         type: "aws_proxy"
         connectionType: "INTERNET"
-        httpMethod: "POST"
 x-amazon-apigateway-cors:
   allowMethods:
     - "POST"
