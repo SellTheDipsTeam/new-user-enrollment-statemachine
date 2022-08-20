@@ -42,7 +42,7 @@ Resources:
       Type: EXPRESS
       Events:
         NewUserEnrollmentApi:
-          Type: Api
+          Type: HttpApi
           Properties:
             RestApiId: !Ref NewUserEnrollmentApi
             Path: /enroll-user
