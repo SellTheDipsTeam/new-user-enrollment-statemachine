@@ -1,13 +1,35 @@
 openapi: "3.0.1"
 info:
-  title: "New User Enrollment API Paramenters"
-  version: "2020-11-06 15:32:29UTC"
+  title: "New User Enrollment API"
+  version: "v1.0"
 paths:
   /enroll-user:
     post:
       responses:
+        '201':
+          description: User email has been confirmed and database has been updated accordingly
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json: {}
+        '404':
+          description: User Not Found
+          content:
+            application/json: {}
+        '405':
+          description: Invalid httpMethod
+          content:
+            application/json: {}
+        '500':
+          description: Invalid httpMethod
+          content:
+            application/json: { }
         default:
-          description: "Default response for POST /"
+          description: "Error",
+          content:
+            'application/json': {}
       x-amazon-apigateway-integration:
         integrationSubtype: "StepFunctions-StartSyncExecution"
         credentials:
@@ -19,6 +41,7 @@ paths:
         payloadFormatVersion: "1.0"
         type: "aws_proxy"
         connectionType: "INTERNET"
+        httpMethod: "POST"
 x-amazon-apigateway-cors:
   allowMethods:
     - "*"

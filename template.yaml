@@ -39,6 +39,12 @@ Resources:
         DDBPutItem: !Sub arn:${AWS::Partition}:states:::dynamodb:putItem
 #        DDBTable: !Ref TransactionTable
       Type: EXPRESS
+      Logging:
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt StateMachineLogGroup.Arn
+        IncludeExecutionData: false
+        Level: 'ALL'
 #      Events:
 #        NewUserEnrollmentApi:
 #          Type: HttpApi
@@ -54,6 +60,11 @@ Resources:
             FunctionName: !Ref AddMemberToDynamoDB
 #        - DynamoDBWritePolicy:
 #            TableName: !Ref TransactionTable
+
+  StateMachineLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join [ "/", [ "stepfunctions", NewUserEnrollmentStateMachine]]
 
   ConfirmNewEmail:
     Type: AWS::Serverless::Function
