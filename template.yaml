@@ -23,7 +23,6 @@ Resources:
   NewUserEnrollmentApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      FailOnWarnings: True
       DefinitionBody:
         'Fn::Transform':
           Name: 'AWS::Include'
