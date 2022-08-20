@@ -23,7 +23,7 @@ Resources:
   NewUserEnrollmentApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: V1
+      StageName: v1
 
   NewUserEnrollmentStateMachine:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
@@ -34,6 +34,7 @@ Resources:
         AddMemberToDynamoDBArn: !GetAtt AddMemberToDynamoDB.Arn
         DDBPutItem: !Sub arn:${AWS::Partition}:states:::dynamodb:putItem
 #        DDBTable: !Ref TransactionTable
+      Type: EXPRESS
       Events:
         NewUserEnrollmentApi:
           Type: Api
