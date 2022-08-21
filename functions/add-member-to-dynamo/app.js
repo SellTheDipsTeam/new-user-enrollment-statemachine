@@ -1,5 +1,6 @@
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 const {constructUserJSON} = require("./utils/db-utils");
+const {log} = require("./utils/logging");
 /**
  * Sample Lambda function which mocks the operation of checking the current price of a stock.
  * For demonstration purposes this Lambda function simply returns a random integer between 0 and 100 as the stock price.
@@ -29,12 +30,26 @@ exports.addMemberToDynamo = async (event, context) => {
 
     try {
         const data = await client.send(new PutItemCommand(params));
+
+        log("RESPONSE", event, null, data, 200);
         return {
             statusCode: 200,
             body: JSON.stringify(data),
         };
 
     } catch(err) {
-        throw err;
+        if (err['$metadata']) {
+            const statusCode = err['$metadata'].httpStatusCode
+            log("ERROR", event, err.name, null, statusCode);
+            return {
+                statusCode: statusCode,
+                body: "Internal Server Error",
+            };
+        }
+        log("ERROR", event, err.message, null, 500);
+        return {
+            statusCode: 500,
+            body: "Internal Server Error",
+        };
     }
 };

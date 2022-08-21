@@ -26,10 +26,7 @@
                     "Next": "Create DynamoDB User"
                 }
             ],
-            "Default": "Confirmation Failure"
-        },
-        "Confirmation Failure": {
-            "Type": "Fail"
+            "Default": "Failure Response Sent"
         },
         "Create DynamoDB User": {
             "Type": "Task",
@@ -57,10 +54,10 @@
             ],
             "Default": "Member Dynamo Update Fail"
         },
-        "Member Dynamo Update Fail": {
+        "Failure Response Sent": {
             "Type": "Fail"
         },
-        "New Member Confirmed": {
+        "Success Response Sent": {
             "Type": "Succeed"
         }
     }

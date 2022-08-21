@@ -34,10 +34,7 @@ exports.confirmUserEmailFunction = async(event) => {
 
     try {
         const response = await cognitoClient.send(command);
-
-        if (response['$metadata'].httpStatusCode === 200) {
-
-        }
+        log("RESPONSE", event, null, response, 200);
 
         let today = new Date();
         const dd = String(today.getDate()).padStart(2, '0');
@@ -56,9 +53,15 @@ exports.confirmUserEmailFunction = async(event) => {
         if (err['$metadata']) {
             const statusCode = err['$metadata'].httpStatusCode
             log("ERROR", event, err.name, null, statusCode);
-            throw err;
+            return {
+                statusCode: statusCode,
+                success: false
+            };
         }
         log("ERROR", event, err.message, null, 500);
-        throw err;
+        return {
+            statusCode: 500,
+            success: false,
+        };
     }
 }
