@@ -3,11 +3,11 @@ info:
   title: "New User Enrollment API"
   version: "v1.0"
 paths:
-  "/enroll-user":
+  /enroll-users:
     post:
       responses:
         default:
-          description: "Default Response For Post /",
+          description: "Default response for POST /"
       x-amazon-apigateway-integration:
         integrationSubtype: "StepFunctions-StartSyncExecution"
         credentials:
@@ -21,7 +21,7 @@ paths:
         connectionType: "INTERNET"
 x-amazon-apigateway-cors:
   allowMethods:
-    - "POST"
+    - "*"
   maxAge: 0
   allowCredentials: false
   allowOrigins:
