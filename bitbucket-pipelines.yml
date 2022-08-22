@@ -1,0 +1,139 @@
+image: public.ecr.aws/sam/build-provided
+
+pipelines:
+  branches:
+    feature:
+      - step:
+          name: Build and Package
+          script:
+            - export SAM_TEMPLATE="template.yaml"
+            - export PIPELINE_USER_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - export PIPELINE_USER_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - export TESTING_PIPELINE_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-1AKNA10SDNUW3"
+            - export TESTING_CLOUDFORMATION_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1KQTJ3MAHEIQ4"
+            - export TESTING_ARTIFACTS_BUCKET="aws-sam-cli-managed-test-pipeline-artifactsbucket-1dbs55vkf53ih"
+            - export TESTING_STACK_NAME="new-user-enrollment-statemachine-test"
+            - export TESTING_REGION="us-east-1"
+            # If there are functions with "Image" PackageType in your template,
+            # uncomment the line below and add "--image-repository ${TESTING_IMAGE_REPOSITORY}" to
+            # testing "sam package" and "sam deploy" commands.'
+            #- export TESTING_IMAGE_REPOSITORY='0123456789.dkr.ecr.region.amazonaws.com/repository-name'
+            - sam build --template $SAM_TEMPLATE --use-container
+            - source assume-role.sh $TESTING_PIPELINE_EXECUTION_ROLE testing-stage-packaging testing-stage
+            - >
+              sam package --profile testing-stage
+              --s3-bucket $TESTING_ARTIFACTS_BUCKET
+              --region $TESTING_REGION
+              --output-template-file packaged-testing.yaml
+            - >
+              sam deploy --profile testing-stage
+              --stack-name ${TESTING_STACK_NAME}
+              --template packaged-testing.yaml
+              --capabilities CAPABILITY_IAM
+              --region ${TESTING_REGION}
+              --s3-bucket ${TESTING_ARTIFACTS_BUCKET}
+              --no-fail-on-empty-changeset
+              --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
+          services:
+            - docker
+
+    main:
+      - step:
+          name: Build and Package
+          script:
+            - export SAM_TEMPLATE="template.yaml"
+            - export PIPELINE_USER_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - export PIPELINE_USER_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - export TESTING_PIPELINE_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-1AKNA10SDNUW3"
+            - export TESTING_CLOUDFORMATION_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1KQTJ3MAHEIQ4"
+            - export TESTING_ARTIFACTS_BUCKET="aws-sam-cli-managed-test-pipeline-artifactsbucket-1dbs55vkf53ih"
+            - export TESTING_REGION="us-east-1"
+            # If there are functions with "Image" PackageType in your template,
+            # uncomment the line below and add "--image-repository ${TESTING_IMAGE_REPOSITORY}" to
+            # testing "sam package" and "sam deploy" commands.'
+            #- export TESTING_IMAGE_REPOSITORY='0123456789.dkr.ecr.region.amazonaws.com/repository-name'
+            - export PRODUCTION_PIPELINE_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-producti-PipelineExecutionRole-5VE1F6YZ6QSR"
+            - export PRODUCTION_CLOUDFORMATION_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-produ-CloudFormationExecutionR-19XMX0RIKI1EV"
+            - export PRODUCTION_ARTIFACTS_BUCKET="aws-sam-cli-managed-production-pi-artifactsbucket-kz89n3m61zi3"
+            - export PRODUCTION_REGION="us-east-1"
+            # If there are functions with "Image" PackageType in your template,
+            # uncomment the line below and add "--image-repository ${PRODUCTION_IMAGE_REPOSITORY}" to
+            # testing "sam package" and "sam deploy" commands.'
+            #- export PRODUCTION_IMAGE_REPOSITORY='0123456789.dkr.ecr.region.amazonaws.com/repository-name'
+            - sam build --template $SAM_TEMPLATE --use-container
+            - source assume-role.sh $TESTING_PIPELINE_EXECUTION_ROLE testing-stage-packaging testing-stage
+            - >
+              sam package --profile testing-stage
+              --s3-bucket $TESTING_ARTIFACTS_BUCKET
+              --region $TESTING_REGION
+              --output-template-file packaged-testing.yaml
+            - source assume-role.sh $PRODUCTION_PIPELINE_EXECUTION_ROLE testing-stage-packaging production-stage
+            - >
+              sam package --profile production-stage
+              --s3-bucket $PRODUCTION_ARTIFACTS_BUCKET
+              --region $PRODUCTION_REGION
+              --output-template-file packaged-production.yaml
+          artifacts:
+            - packaged-testing.yaml
+            - packaged-production.yaml
+          services:
+            - docker
+      - step:
+          name: Deploy to Test
+          script:
+            - export SAM_TEMPLATE="template.yaml"
+            - export PIPELINE_USER_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - export PIPELINE_USER_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - export TESTING_PIPELINE_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-1AKNA10SDNUW3"
+            - export TESTING_CLOUDFORMATION_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1KQTJ3MAHEIQ4"
+            - export TESTING_ARTIFACTS_BUCKET="aws-sam-cli-managed-test-pipeline-artifactsbucket-1dbs55vkf53ih"
+            - export TESTING_STACK_NAME="new-user-enrollment-statemachine-test"
+            - export TESTING_REGION="us-east-1"
+            # If there are functions with "Image" PackageType in your template,
+            # uncomment the line below and add "--image-repository ${TESTING_IMAGE_REPOSITORY}" to
+            # prod "sam package" and "sam deploy" commands.'
+            # - export TESTING_IMAGE_REPOSITORY='0123456789.dkr.ecr.region.amazonaws.com/repository-name'
+            - source assume-role.sh $TESTING_PIPELINE_EXECUTION_ROLE testing-stage-packaging testing-stage
+            - >
+              sam deploy --profile testing-stage
+              --stack-name ${TESTING_STACK_NAME}
+              --template packaged-testing.yaml
+              --capabilities CAPABILITY_IAM
+              --region ${TESTING_REGION}
+              --s3-bucket ${TESTING_ARTIFACTS_BUCKET}
+              --no-fail-on-empty-changeset
+              --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
+          artifacts:
+            - packaged-testing.yaml
+            - packaged-production.yaml
+          services:
+            - docker
+      - step:
+          name: Deploy to Prod
+          script:
+            - export SAM_TEMPLATE="template.yaml"
+            - export PIPELINE_USER_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - export PIPELINE_USER_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - export PRODUCTION_PIPELINE_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-producti-PipelineExecutionRole-5VE1F6YZ6QSR"
+            - export PRODUCTION_CLOUDFORMATION_EXECUTION_ROLE="arn:aws:iam::009383842162:role/aws-sam-cli-managed-produ-CloudFormationExecutionR-19XMX0RIKI1EV"
+            - export PRODUCTION_ARTIFACTS_BUCKET="aws-sam-cli-managed-production-pi-artifactsbucket-kz89n3m61zi3"
+            - export PRODUCTION_STACK_NAME="new-user-enrollment-statemachine"
+            - export PRODUCTION_REGION="us-east-1"
+            # If there are functions with "Image" PackageType in your template,
+            # uncomment the line below and add "--image-repository ${PRODUCTION_IMAGE_REPOSITORY}" to
+            # prod "sam package" and "sam deploy" commands.'
+            # - export PRODUCTION_IMAGE_REPOSITORY='0123456789.dkr.ecr.region.amazonaws.com/repository-name'
+            - source assume-role.sh $PRODUCTION_PIPELINE_EXECUTION_ROLE testing-stage-packaging production-stage
+            - >
+              sam deploy --profile production-stage
+              --stack-name ${PRODUCTION_STACK_NAME}
+              --template packaged-production.yaml
+              --capabilities CAPABILITY_IAM
+              --region ${PRODUCTION_REGION}
+              --s3-bucket ${PRODUCTION_ARTIFACTS_BUCKET}
+              --no-fail-on-empty-changeset
+              --role-arn ${PRODUCTION_CLOUDFORMATION_EXECUTION_ROLE}
+          services:
+            - docker
+          # Uncomment following line to enable approval for prod deployment.
+          # trigger: manual
